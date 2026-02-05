@@ -1,0 +1,1 @@
+console.log('Boot file located and node environment active.');
