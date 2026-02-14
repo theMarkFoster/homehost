@@ -1,8 +1,9 @@
 {
 	"Port" : 9595,
-	"Name" : "Aquatics",
-	"Domains" : [
+	"Name" : "HomeHost",
+	"Domains" : [ 
 		"https://aquatics.cloud",
 		"https://homehost.markfoster.wiki"
-	]
+	],
+	"Proxies" : [] 
 }
