@@ -1,7 +1,7 @@
 //=====================
 //== Logging prelude
 //=====================
-
+const fs = require('fs');
 global.logger = {};
 
 const STATUS_WIDTH = 10; // inside the brackets
@@ -48,29 +48,42 @@ const path = require('path');
 //== for use in addon packages
 //=====================
 
-logger.bootLog('Loading core library path references to global')
 try{
 	global.homehost = {};
-	homehost.config = require( path.join("..", "..", "data", "config.json") );
-	homehost.app = path.join(__dirname, 'app');
-	homehost.users = path.join(__dirname, 'user-management');
+	homehost.config = {}
+	homehost.app = path.join(__dirname, 'app', 'init.js');
+	homehost.users = path.join(__dirname, 'user-management', 'init.js');
+	homehost.data = path.join(__dirname, '..', '..', 'data' );
 }
 catch(err){
 	logger.fail();
-	console.error(err);
+	throw err;
 }
-logger.ok();
 
 //=====================
 //== Global/Core Boot
 //=====================
 
-logger.bootLog('Running core library setup');
+console.log('[BOOT] Initializing core components');
 try{
+
+	logger.bootLog( '\tScanning and setting up data directory' );
+	if(!fs.existsSync(homehost.data)) { homehost.setup = true; fs.mkDir(homehost.data) }
+	logger.ok()
+
+  logger.bootLog( '\tLoading config.json into memory' );
+  homehost.config = require( path.join( homehost.data, 'config.json' ) );
+  logger.ok();
+  
+  logger.bootLog( '\tLoading express app into memory and initializing CORS-policy'); 
 	require(homehost.app);
+	logger.ok();
+	
+	logger.bootLog( '\tLoading user management module and wiring authentication routes');
 	require(homehost.users);
+	logger.ok();
+	
 }catch(err){
 	logger.fail();
-	console.error(err);
+	throw err;
 }
-logger.ok();
